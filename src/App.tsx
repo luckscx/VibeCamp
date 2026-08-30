@@ -7,6 +7,8 @@ import Templates from './pages/Templates'
 import Prompts from './pages/Prompts'
 import Issues from './pages/Issues'
 import Glossary from './pages/Glossary'
+import Chapters from './pages/Chapters'
+import Cases from './pages/Cases'
 
 export default function App() {
   return (
@@ -20,6 +22,10 @@ export default function App() {
           <Route path="/prompts" element={<Prompts />} />
           <Route path="/issues" element={<Issues />} />
           <Route path="/glossary" element={<Glossary />} />
+          <Route path="/chapters" element={<Chapters />} />
+          <Route path="/chapters/:slug" element={<Chapters />} />
+          <Route path="/cases" element={<Cases />} />
+          <Route path="/cases/:slug" element={<Cases />} />
         </Routes>
       </Layout>
     </HashRouter>

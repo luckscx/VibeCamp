@@ -110,6 +110,9 @@ irm https://copilot.tencent.com/cli/install.ps1 | iex
 
 ### 2.3 验证安装
 
+#### 示例 1：装完立刻验证，别等用到才发现没装好
+
+**输入：**
 ```bash
 codebuddy --version
 ```
@@ -135,6 +138,26 @@ npm config get prefix
 
 **然后**：把这个路径（Windows 的话后面加 `\`）加进系统环境变量 `PATH`，
 **关掉终端重新开一个**，再跑一次 `codebuddy --version`。
+
+#### 示例 2：命令找不到？查 npm 装到哪去了
+
+Windows 上最常见。`codebuddy` 装好了但终端说找不到，八成是 npm 的全局目录
+没进 PATH。先问 npm 它装哪儿了：
+
+```bash
+npm config get prefix
+```
+
+**你应该看到：**
+```
+C:\Users\grissom\AppData\Roaming\npm
+```
+
+把这个路径加进 `PATH`，**新开一个终端**再试。
+
+> **验收点**：新终端里 `codebuddy --version` 能打印版本号，不是 `command not found`。
+>
+> 忘了重开终端是最常见的翻车点——环境变量的改动对已经打开的终端不生效。
 
 > **忘了设 PATH 就重开的**，是最常见的翻车点。改完环境变量一定要**新开终端**。
 
@@ -168,6 +191,8 @@ codebuddy
 - 还是不行 → 换 `International Site` 试试
 
 ### 2.5 第一个动作：/init
+
+#### 示例 3：先 cd 进目录，再 /init
 
 ```
 > /init

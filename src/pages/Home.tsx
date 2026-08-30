@@ -1,14 +1,15 @@
 import { tracks } from '../data/tracks'
 import { promptCards } from '../data/templates'
 import { issues } from '../data/issues'
-import { glossary } from '../data/issues'
 import { tools } from '../data/tools'
+import { chapters, cases, glossary, stats as contentStats } from '../data/generated/content'
 import { Link } from 'react-router-dom'
 
 const stats = [
+  { n: chapters.length, label: '章主线教程', to: '/chapters', icon: '📚' },
+  { n: contentStats.examples, label: '个可照做示例', to: '/chapters', icon: '✏️' },
+  { n: cases.length, label: '个真实案例', to: '/cases', icon: '🔍' },
   { n: tools.length, label: '个工具横向对比', to: '/tools', icon: '🧭' },
-  { n: tracks.length, label: '条训练路径', to: '/paths', icon: '🗺️' },
-  { n: tracks.reduce((s, t) => s + t.steps.length, 0), label: '个可验收步骤', to: '/paths', icon: '✅' },
   { n: promptCards.length, label: '条现成提示词', to: '/prompts', icon: '✨' },
   { n: issues.length, label: '个高频翻车现场', to: '/issues', icon: '🚑' },
   { n: glossary.length, label: '个黑话翻译', to: '/glossary', icon: '📖' },
@@ -57,15 +58,16 @@ export default function Home() {
             选对工具 → 一步步做 → 卡住了查手册 → 做出来发给别人用。
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/paths" className="btn-primary !px-5 !py-2.5 !text-base">
-              🗺️ 先看训练路径
+            <Link to="/chapters" className="btn-primary !px-5 !py-2.5 !text-base">
+              📚 从第 0 章开始
             </Link>
-            <Link to="/templates" className="btn-ghost !px-5 !py-2.5 !text-base">
-              📦 或者，直接抄一个模板开工
+            <Link to="/cases" className="btn-ghost !px-5 !py-2.5 !text-base">
+              🔍 或者，先看别人翻过的车
             </Link>
           </div>
           <p className="mt-4 text-xs text-slate-600">
-            预计 6 小时做出第一个能玩的东西。不需要任何编程基础，只需要一台电脑。
+            {chapters.length} 章主线教程 · {contentStats.examples} 个操作示例 ·{' '}
+            {cases.length} 个真实案例（带 commit 号可溯源）
           </p>
         </div>
       </section>
@@ -103,6 +105,86 @@ export default function Home() {
               <h3 className="mt-3 font-semibold text-white">{p.t}</h3>
               <p className="prose-cn mt-2">{p.d}</p>
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 主线教程 */}
+      <section>
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="section-title">按顺序走完这 {chapters.length} 章</h2>
+            <p className="prose-cn mt-2 max-w-2xl">
+              每章都有<span className="text-slate-200">可照做的操作示例</span>和
+              <span className="text-slate-200">验收点</span>。 做到「看到该看到的东西」再往下走。
+            </p>
+          </div>
+          <Link to="/chapters" className="btn-ghost">
+            查看全部 →
+          </Link>
+        </div>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {chapters.map((c) => {
+            const n = new Set(
+              Array.from(c.body.matchAll(/^#{2,4}\s*示例\s*\d+：/gm)),
+            ).size
+            return (
+              <Link
+                key={c.slug}
+                to={`/chapters/${c.slug}`}
+                className="card group flex flex-col !p-4"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-lg font-bold text-vibe-500/60">
+                    {String(c.order).padStart(2, '0')}
+                  </span>
+                  {n > 0 && <span className="chip">{n} 个示例</span>}
+                </div>
+                <h3 className="mt-2 font-semibold text-white group-hover:text-vibe-300">
+                  {c.title}
+                </h3>
+              </Link>
+            )
+          })}
+        </div>
+      </section>
+
+      {/* 真实案例 */}
+      <section>
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="section-title">看看别人真踩过的坑</h2>
+            <p className="prose-cn mt-2 max-w-2xl">
+              这些案例<span className="text-slate-200">不是编的</span>
+              ，来自真实项目的 git 历史，标注了仓库和 commit 号——能自己翻出来对照。
+            </p>
+          </div>
+          <Link to="/cases" className="btn-ghost">
+            查看全部 →
+          </Link>
+        </div>
+        <div className="mt-6 grid gap-4 lg:grid-cols-3">
+          {cases.map((c) => (
+            <Link key={c.slug} to={`/cases/${c.slug}`} className="card group flex flex-col">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="chip font-mono">{c.repo}</span>
+                {c.commits.slice(0, 2).map((h) => (
+                  <span key={h} className="chip font-mono !text-vibe-400/70">
+                    {h.slice(0, 7)}
+                  </span>
+                ))}
+              </div>
+              <h3 className="mt-3 font-semibold leading-snug text-white group-hover:text-vibe-300">
+                {c.title}
+              </h3>
+              <div className="mt-3 flex flex-wrap gap-1.5 border-t border-ink-700 pt-3">
+                {c.tags.slice(0, 3).map((t) => (
+                  <span key={t} className="chip">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </Link>
           ))}
         </div>
       </section>

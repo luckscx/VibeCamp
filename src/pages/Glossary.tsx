@@ -1,20 +1,29 @@
 import { useState } from 'react'
-import { glossary } from '../data/issues'
+import { glossary } from '../data/generated/content'
 
 export default function Glossary() {
   const [kw, setKw] = useState('')
 
-  const list = glossary
-    .filter((g) => {
-      if (!kw.trim()) return true
-      const k = kw.toLowerCase()
-      return (
-        g.term.toLowerCase().includes(k) ||
-        (g.full?.toLowerCase().includes(k) ?? false) ||
-        g.plain.toLowerCase().includes(k)
-      )
-    })
-    .sort((a, b) => a.term.localeCompare(b.term, 'zh'))
+  const filtered = glossary.filter((g) => {
+    if (!kw.trim()) return true
+    const k = kw.toLowerCase()
+    return (
+      g.term.toLowerCase().includes(k) ||
+      g.full.toLowerCase().includes(k) ||
+      g.plain.toLowerCase().includes(k)
+    )
+  })
+
+  // 搜索时按字母序铺平；否则按分类分组（分类顺序沿用源文件）
+  const groups: { name: string; items: typeof glossary }[] = []
+  for (const g of filtered) {
+    const key = g.category || '其他'
+    const found = groups.find((x) => x.name === key)
+    if (found) found.items.push(g)
+    else groups.push({ name: key, items: [g] })
+  }
+  const searching = kw.trim().length > 0
+  if (searching) groups.forEach((x) => x.items.sort((a, b) => a.term.localeCompare(b.term, 'zh')))
 
   return (
     <div className="space-y-8">
@@ -33,24 +42,32 @@ export default function Glossary() {
         className="w-full rounded-lg border border-ink-700 bg-ink-900 px-4 py-2.5 text-sm text-slate-200 placeholder:text-slate-600 focus:border-vibe-600 focus:outline-none"
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {list.map((g) => (
-          <div key={g.term} className="card">
-            <div className="flex flex-wrap items-baseline gap-2">
-              <h2 className="font-bold text-white">{g.term}</h2>
-              {g.full && <span className="text-xs text-slate-600">{g.full}</span>}
-            </div>
-            <p className="prose-cn mt-2 !text-slate-300">{g.plain}</p>
-            {g.analogy && (
-              <p className="mt-3 border-l-2 border-vibe-600/40 pl-3 text-xs leading-relaxed text-slate-500">
-                {g.analogy}
-              </p>
-            )}
-          </div>
-        ))}
+      <div className="space-y-8">
+        {(searching ? [{ name: `找到 ${filtered.length} 条`, items: groups.flatMap((g) => g.items) }] : groups).map(
+          (grp) => (
+            <section key={grp.name}>
+              <h2 className="mb-4 flex items-center gap-2 text-sm font-bold tracking-wide text-vibe-400">
+                <span className="h-4 w-1 rounded bg-vibe-500/60" />
+                {grp.name}
+                <span className="text-xs font-normal text-slate-600">{grp.items.length}</span>
+              </h2>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {grp.items.map((g) => (
+                  <div key={`${grp.name}-${g.term}`} className="card">
+                    <div className="flex flex-wrap items-baseline gap-2">
+                      <h3 className="font-bold text-white">{g.term}</h3>
+                      {g.full && <span className="text-xs text-slate-600">{g.full}</span>}
+                    </div>
+                    <p className="prose-cn mt-2 !text-slate-300">{g.plain}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ),
+        )}
       </div>
 
-      {list.length === 0 && (
+      {filtered.length === 0 && (
         <p className="text-center text-slate-500">没找到。试试搜短一点的关键字。</p>
       )}
 

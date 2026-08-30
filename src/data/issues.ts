@@ -1,4 +1,4 @@
-import type { GlossaryItem, Issue } from './types'
+import type { Issue } from './types'
 
 export const issues: Issue[] = [
   {
@@ -135,37 +135,4 @@ export const issues: Issue[] = [
     ],
     prevent: '本地构建完，先在本地用 preview 跑一遍构建产物，确认没问题再上传。',
   },
-]
-
-export const glossary: GlossaryItem[] = [
-  { term: 'Vibe Coding', plain: '不写代码，用说话的方式做软件。你描述想要什么，AI 帮你写代码，你负责看结果对不对。', analogy: '像你跟装修队说"我想要北欧风、要有个大书架"，而不是自己画施工图。' },
-  { term: 'Agent', plain: '能自己拆解任务、一步步做完的 AI，不只是回答你一个问题。', analogy: '普通 AI 是"你问我答"，Agent 是"你交代一件事，它自己干完再汇报"。' },
-  { term: 'CodeBuddy', plain: '腾讯自研的编程 Agent，能读代码库、改代码、跑验证，端到端把软件做出来。' },
-  { term: 'WorkBuddy', plain: '腾讯的 AI 办公工作台，处理文档、表格、数据这类办公任务，不擅长做软件工程。' },
-  { term: 'CLI', full: 'Command Line Interface', plain: '用打字命令操作电脑的方式，就是那个黑底白字的窗口。', analogy: '图形界面是点按钮，CLI 是打字下指令。' },
-  { term: '终端 / Terminal', plain: '就是那个你输入命令的黑窗口。macOS 叫 Terminal，Windows 叫命令提示符或 PowerShell。' },
-  { term: 'npm', full: 'Node Package Manager', plain: '装软件库的命令。别人写好的功能你一行命令就能拿来用。', analogy: '像手机应用商店，不过是给程序员用的。' },
-  { term: 'Node.js', plain: '让 JavaScript 能在电脑上（而不是只能在浏览器里）运行的环境。装很多工具的前提。' },
-  { term: 'localStorage', plain: '浏览器提供的一小块存储空间，存在用户自己的电脑上，刷新不丢，但换设备就没了。', analogy: '像浏览器给你的一本小本子，可以记点东西，但只有这个浏览器的这台电脑上看得到。' },
-  { term: '构建 / Build', plain: '把开发时的一堆文件，打包压缩成可以直接部署的成品。', analogy: '像把食材做成一道可以直接端上桌的菜。' },
-  { term: 'dist', full: 'distribution', plain: '构建后生成的目录，里面就是要部署上线的东西。' },
-  { term: '部署 / Deploy', plain: '把你做好的东西放到服务器上，让别人通过网址能访问。' },
-  { term: 'MVP', full: 'Minimum Viable Product', plain: '最小可用版本。只做核心功能，能用就先上，别追求完美。', analogy: '先做个能骑的滑板车，别一上来就要造汽车。' },
-  { term: 'Prompt', plain: '你跟 AI 说的话 / 下的指令。' },
-  { term: '上下文 / Context', plain: 'AI 当前"记得"的对话内容。超长之后早期的会被忘掉。', analogy: '像 AI 的短期记忆，容量有限，聊太久前面的就模糊了。' },
-  { term: 'Bug', plain: '程序里出错的地方，导致行为不符合预期。' },
-  { term: 'Debug', plain: '找 bug 并修掉的过程。' },
-  { term: 'Git', plain: '代码版本管理工具。能记录每次改动，随时回退到之前的版本。', analogy: '像游戏的存档点，打坏了可以读档重来。' },
-  { term: 'README', plain: '项目说明文件，告诉别人（和三个月后的你）这项目怎么跑起来、怎么改。' },
-  { term: '响应式 / Responsive', plain: '页面能自动适应不同屏幕尺寸，手机和电脑都能正常显示。' },
-  { term: 'Canvas', plain: '网页上用来画图、做动画、做游戏的一块"画布"。' },
-  { term: 'API', full: 'Application Programming Interface', plain: '别人做好的功能，你按规定的方式调用就能用，不用知道内部怎么实现。', analogy: '像餐厅的菜单，你点菜就行，不用管厨房怎么做。' },
-  { term: 'CDN', full: 'Content Delivery Network', plain: '别人托管好的公共库，你一行代码引用就能用，不用自己下载。' },
-  { term: '状态 / State', plain: '程序当前的数据快照。比如游戏里"分数 120、血量 3、暂停中"就是状态。' },
-  { term: '重构 / Refactor', plain: '不动功能的前提下整理代码结构，让它更好读、更好改。', analogy: '房间东西没变，只是重新收纳整理了一遍。' },
-  { term: '环境 / Environment', plain: '跑代码需要的一整套东西：操作系统、Node 版本、装了哪些库。' },
-  { term: '依赖 / Dependency', plain: '你的项目用到的别人的库。装依赖就是把这些库下载下来。' },
-  { term: '404', plain: '找不到你要的东西。最常见的原因是文件路径写错了。' },
-  { term: '缓存 / Cache', plain: '浏览器存的临时副本，为了加载更快。改了代码没生效，试试强制刷新 Cmd/Ctrl + Shift + R。' },
-  { term: 'PTY', full: 'Pseudo Terminal', plain: '虚拟终端。有些命令行程序（比如 Claude Code）必须在真实的终端环境里才能正常交互。' },
 ]

@@ -2,6 +2,8 @@ import { NavLink } from 'react-router-dom'
 
 const nav = [
   { to: '/', label: '首页', icon: '🏕️' },
+  { to: '/chapters', label: '主线教程', icon: '📚' },
+  { to: '/cases', label: '真实案例', icon: '🔍' },
   { to: '/tools', label: '选工具', icon: '🧭' },
   { to: '/paths', label: '训练路径', icon: '🗺️' },
   { to: '/templates', label: '模板库', icon: '📦' },

@@ -4,10 +4,11 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "content": "python3 scripts/build_content.py",
+    "dev": "npm run content && vite",
+    "build": "npm run content && tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "tsc --noEmit",
+    "lint": "npm run content && tsc --noEmit",
     "export": "python3 scripts/export.py",
     "export:clean": "python3 scripts/export.py --no-watermark"
   },

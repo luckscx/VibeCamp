@@ -79,10 +79,3 @@ export interface Issue {
   prevent: string
 }
 
-export interface GlossaryItem {
-  term: string
-  full?: string
-  plain: string
-  /** 类比，帮助小白理解 */
-  analogy?: string
-}
