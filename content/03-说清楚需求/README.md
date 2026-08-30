@@ -114,10 +114,10 @@ status: 草稿
 【不要啥】明确排除的（很重要，防止 AI 做多）
 【参考】有没有见过的类似东西，贴链接或描述
 ```
-→ 完整模板见 [resources/templates/需求模板.md](../../resources/templates/需求模板.md)
+→ 完整模板见 [resources/templates/需求模板.md](../resources/templates/需求模板.md)
 
 ### 3.2 反向追问提示词
-→ 见 [resources/prompts/](../../resources/prompts/)
+→ 见 [resources/prompts/](../resources/prompts/)
 
 ### 3.3 三个让 AI 更懂你的技巧
 

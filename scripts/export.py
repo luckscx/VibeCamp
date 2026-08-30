@@ -72,7 +72,7 @@ def make_watermark_footer(name: str, when: str) -> str:
 def collect_files():
     """收集所有 markdown，按章节顺序排序。"""
     files = sorted(CONTENT.rglob("*.md"))
-    # 排序：content/README.md 最前，然后 00..07，最后 resources
+    # 排序：content/README.md 最前，然后 00..07，然后案例，最后 resources
     def key(p: Path):
         rel = p.relative_to(CONTENT)
         parts = rel.parts
@@ -81,9 +81,14 @@ def collect_files():
         m = CHAPTER_RE.match(parts[0])
         if m:
             return (1, int(m.group(1)), parts[1:] if len(parts) > 1 else ("",))
+        if parts[0] == "cases":
+            # cases/README.md 在案例之前，其余按目录名
+            if len(parts) == 2 and parts[1] == "README.md":
+                return (2, 0, "")
+            return (2, 1, *parts[1:])
         if parts[0] == "resources":
-            return (2, *parts[1:])
-        return (3, *parts)
+            return (3, *parts[1:])
+        return (4, *parts)
     return sorted(files, key=key)
 
 
@@ -114,6 +119,12 @@ def build_index(files, watermark: str, when: str) -> str:
         if m:
             section = "主线章节"
             label = f"第 {int(m.group(1))} 章 · {m.group(2)}"
+        elif parts[0] == "cases":
+            section = "真实案例"
+            if len(parts) == 2 and parts[1] == "README.md":
+                label = "真实案例"
+            else:
+                label = " / ".join(parts[1:-1])
         elif parts[0] == "resources":
             section = "资源库"
             label = " / ".join(parts[1:-1]) if len(parts) > 2 else "资源库"
@@ -152,6 +163,24 @@ def build_index(files, watermark: str, when: str) -> str:
     return "\n".join(lines)
 
 
+def strip_code_blocks(text: str) -> str:
+    """去掉围栏代码块内容 —— 代码块里的路径是示例，不该当真链接校验。"""
+    return re.sub(r"```.*?```", "", text, flags=re.DOTALL)
+
+
+def check_links(out_root: Path) -> list[tuple[str, str]]:
+    """校验导出包内 md 的相对链接（图片 + 跨章节引用）是否都存在。"""
+    LINK_RE = re.compile(r"(?:!\[[^\]]*\]|\[[^\]]*\])\((\.[^\)]+)\)")
+    bad = []
+    for md in sorted(out_root.rglob("*.md")):
+        txt = strip_code_blocks(md.read_text(encoding="utf-8"))
+        for m in LINK_RE.findall(txt):
+            t = m.split("#")[0]
+            if t and not (md.parent / t).resolve().exists():
+                bad.append((md.relative_to(out_root).as_posix(), m))
+    return bad
+
+
 def export(watermark: str | None, out_dir: Path, as_zip: bool):
     files = collect_files()
     if not files:
@@ -185,6 +214,18 @@ def export(watermark: str | None, out_dir: Path, as_zip: bool):
         target.write_text(content, encoding="utf-8")
         count += 1
 
+    # 图片等静态资源（案例配图）—— 原样复制，不加水印
+    ASSET_SUFFIXES = {".webp", ".png", ".jpg", ".jpeg", ".gif", ".svg"}
+    img_count = 0
+    for asset in sorted(CONTENT.rglob("*")):
+        if not asset.is_file() or asset.suffix.lower() not in ASSET_SUFFIXES:
+            continue
+        rel = asset.relative_to(CONTENT)
+        tgt = out_dir / "VibeCamp" / rel
+        tgt.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(asset, tgt)
+        img_count += 1
+
     # 索引
     idx_name = "VibeCamp"
     text = build_index(files, watermark or "（无）", when)
@@ -193,6 +234,16 @@ def export(watermark: str | None, out_dir: Path, as_zip: bool):
     (out_dir / idx_name / "README.md").write_text(text, encoding="utf-8")
 
     print(f"✅ 已导出 {count} 个文件 → {out_dir / idx_name}")
+    if img_count:
+        print(f"🖼  含 {img_count} 张配图")
+
+    # 链接自检 —— 相对路径写错层级是高频错误，导出时直接拦下
+    bad = check_links(out_dir / idx_name)
+    if bad:
+        print(f"\n⚠️  发现 {len(bad)} 处失效链接：", file=sys.stderr)
+        for f, l in bad:
+            print(f"   {f} -> {l}", file=sys.stderr)
+        print("   （zip 仍会生成，但请先修复这些路径）", file=sys.stderr)
 
     if as_zip:
         zip_path = out_dir / f"VibeCamp-教程包-{datetime.now():%Y%m%d}.zip"
