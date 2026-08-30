@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "export": "python3 scripts/export.py",
+    "export:clean": "python3 scripts/export.py --no-watermark"
   },
   "dependencies": {
     "react": "^18.3.1",

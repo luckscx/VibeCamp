@@ -39,11 +39,83 @@ status: 草稿
 | 症状 | 可能原因 | 第一动作 |
 |---|---|---|
 | 白屏 | 服务没起 / 端口错 | 问 AI："服务在哪个端口跑？" |
-| `port already in use` | 端口被占 | 换端口或杀掉旧进程 |
+| `EADDRINUSE` | 端口被占 | 换端口或杀掉旧进程 |
 | `command not found` | 工具没装 / PATH 问题 | 见第 2 章 2.3 |
 | `Cannot find module xxx` | 依赖没装 | 让 AI 跑安装命令 |
+| `npm error code E404` | 包名写错了 | 检查拼写，或问 AI 正确包名 |
 | 改了代码页面没变 | 缓存 / 没热更新 | 硬刷新（Ctrl+Shift+R） |
 | 本地能跑，别人打不开 | 只跑了本地服务 | 见第 6 章 |
+
+### 5.2.1 三个真实报错长什么样（实测采集）
+
+> 下面三段都是**实际跑出来的输出**，不是编的。对照着看，你就知道该盯哪一行。
+
+#### 样本 1：`EADDRINUSE` —— 端口被占用
+
+```
+Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1939:16)
+    at listenInCluster (node:net:1996:12)
+    at Server.listen (node:net:2101:7)
+    at Object.<anonymous> (/tmp/errdemo/s.js:4:3)
+```
+
+**该看哪一行**：只有第一行有用 —— `EADDRINUSE` + `:::3000`。
+意思是：**3000 号端口已经被别的东西占了**。
+
+下面那些 `at xxx (node:net:1939:16)` 是**调用栈**，对你没用，
+但对 AI 有用 —— **所以整段复制，不要只贴第一行**。
+
+**怎么办**：跟 AI 说"端口 3000 被占了，换一个端口"，
+或者让它帮你杀掉占用端口的旧进程。
+
+#### 样本 2：`Cannot find module` —— 依赖没装
+
+```
+node:internal/modules/cjs/loader:1404
+  throw err;
+  ^
+
+Error: Cannot find module 'not-a-real-pkg-xyz'
+Require stack:
+- /tmp/errdemo/[eval]
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1401:15)
+```
+
+**该看哪一行**：`Cannot find module 'xxx'` —— 引号里那个就是**缺的包名**。
+
+**怎么办**：
+```bash
+npm install 那个包名
+```
+但更省事的做法是直接跟 AI 说：
+> 报错说找不到 `xxx` 这个包，帮我装一下，装完重新跑。
+
+#### 样本 3：`npm error code E404` —— 包名写错了
+
+```
+npm error code E404
+npm error 404 Not Found - GET https://registry.npmjs.org/this-pkg-does-not-exist-xyz123 - Not found
+npm error 404
+npm error 404  'this-pkg-does-not-exist-xyz123@*' is not in this registry.
+npm error 404
+npm error 404 Note that you can also install from a
+npm error 404 tarball, folder, http url, or git url.
+npm error A complete log of this run can be found in: /root/.npm/_logs/2026-08-30T01_54_47_566Z-debug-0.log
+```
+
+**该看哪一行**：`E404` + 那个包名。`404` 就是"找不到"。
+
+**三种可能**：
+1. **包名拼错了** —— 最常见。比如把 `lodash` 写成 `lodahs`
+2. **这个包根本不存在** —— AI 幻觉，它编了个不存在的包
+3. **这个包是私有/收费的** —— 需要登录或授权
+
+**怎么办**：直接把整段贴给 AI，说：
+> 这个包装不上，是名字错了吗？给我一个真实存在的替代包。
+
+> 💡 **识别 AI 幻觉的小技巧**：如果 AI 让你装一个你从没听过的包，
+> 先去 npmjs.com 搜一下。搜不到，就是它编的。
 
 ### 5.3 怎么把报错贴给 AI（模板）
 
@@ -63,6 +135,73 @@ status: 草稿
 - ❌ 不要只贴最后一行（前面的堆栈信息才是关键）
 - ❌ 不要自己删改报错内容
 - ❌ 不要说"还是不行"而不给新信息
+
+#### 示例 6：贴报错的正反对比
+
+**❌ 这样贴（信息量几乎为零）：**
+
+> 报错了，跑不起来。
+>
+> `Error: listen EADDRINUSE`
+>
+> 怎么办？
+
+**问题在哪**：AI 不知道你做了什么、期望什么、也没看到完整报错。
+它只能猜 —— 而猜的结果通常是给你一堆可能的原因让你自己试。
+
+**✅ 这样贴：**
+
+> 报错了。
+>
+> 【我做了什么】按你说的在终端跑了 `npm run dev`
+> 【期望】启动本地服务，浏览器能打开
+> 【实际】终端报了下面的错，服务没起来
+> 【完整报错】
+> ```
+> Error: listen EADDRINUSE: address already in use :::3000
+>     at Server.setupListenHandle [as _listen2] (node:net:1939:16)
+>     at listenInCluster (node:net:1996:12)
+>     at Server.listen (node:net:2101:7)
+>     at Object.<anonymous> (/tmp/errdemo/s.js:4:3)
+> ```
+>
+> 【补充】我之前开过一个终端跑过同样的命令，可能没关掉。
+>
+> 请确认是不是端口冲突，如果是，帮我换个端口并告诉我怎么再启动。
+
+**为什么好**：
+- 有**上下文**（我做了什么、期望什么）
+- 有**完整报错**（含堆栈）
+- 有**你自己的判断**（"我之前开过一个终端"）—— 这条往往直接命中答案
+- 有**明确的下一步**（换个端口并告诉我怎么启动）
+
+#### 示例 7：当 AI 说"已修复"但你这边还是坏的
+
+**❌ 无效循环：**
+
+> 你：还是不行
+> AI：抱歉，让我再检查一下…… 已修复，请重试
+> 你：还是不行
+> AI：抱歉……（第 3 轮）
+
+**问题在哪**：你没给任何新信息，AI 只能在原地打转。
+**这正好命中官方判据 —— 纠正两次还不对，就该止损了。**
+
+**✅ 换成这样：**
+
+> 还是不行。我补充新信息：
+> 1. 我重新开了终端（不是原来的那个）
+> 2. 完整报错还是这个：[贴报错]
+> 3. 我看了下端口，3000 确实还被占着
+>
+> 先别改代码。告诉我：
+> - 怎么看是哪个程序占了 3000 端口
+> - 确认之后怎么把它关掉
+
+**为什么好**：
+- 给了**新信息**（重新开终端、确认端口还被占）
+- **叫停了无效修改**（"先别改代码"）
+- 把任务从"修 bug"换成了"教我排查"—— 换个角度就出坑了
 
 ### 5.4 止损三板斧（改不动了就用）
 
