@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-ink-950 text-slate-200 antialiased;
+  }
+  ::selection {
+    @apply bg-vibe-500/30;
+  }
+  /* 滚动条 */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-ink-900;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-ink-600 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-ink-600/80;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl border border-ink-700 bg-ink-900/60 p-5 transition-colors hover:border-ink-600;
+  }
+  .chip {
+    @apply inline-flex items-center rounded-md bg-ink-700/70 px-2 py-0.5 text-xs text-slate-400;
+  }
+  .btn {
+    @apply inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors;
+  }
+  .btn-primary {
+    @apply btn bg-vibe-600 text-white hover:bg-vibe-500;
+  }
+  .btn-ghost {
+    @apply btn border border-ink-600 text-slate-300 hover:bg-ink-800 hover:text-white;
+  }
+  .section-title {
+    @apply text-2xl font-bold text-white sm:text-3xl;
+  }
+  .prose-cn {
+    @apply text-sm leading-relaxed text-slate-400;
+  }
+}
