@@ -9,6 +9,7 @@ import Issues from './pages/Issues'
 import Glossary from './pages/Glossary'
 import Chapters from './pages/Chapters'
 import Cases from './pages/Cases'
+import Resources from './pages/Resources'
 
 export default function App() {
   return (
@@ -26,6 +27,8 @@ export default function App() {
           <Route path="/chapters/:slug" element={<Chapters />} />
           <Route path="/cases" element={<Cases />} />
           <Route path="/cases/:slug" element={<Cases />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/resources/:category/:slug" element={<Resources />} />
         </Routes>
       </Layout>
     </HashRouter>

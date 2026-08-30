@@ -72,6 +72,35 @@ CodeBuddy / WorkBuddy / IDE 插件，名字都像，不知道该装哪个。
 > 用 WorkBuddy 做一件小事（比如整理一份文档）是很好的热身。
 > 想真做应用了再回来看第 2 章。
 
+#### 示例 3：装之前先知道要付出什么（实测数据）
+
+下面是在一台 Linux 机器上**实际测量**的数字，不是估算：
+
+| 项目 | 实测结果 |
+|---|---|
+| 装完占多少空间 | **126 MB**（`/root/.local/share/codebuddy/versions/2.125.0/`） |
+| 装在哪个目录 | `~/.local/share/codebuddy/versions/<版本号>/` |
+| 配置文件在哪 | `~/.codebuddy/`（含 sessions、logs、plugins） |
+| 更新到最新版 | `codebuddy update`（当前最新 2.141.0，本机 2.125.0） |
+
+**几个你会碰到的真实情况：**
+
+1. **第一次要登录** —— 跑 `codebuddy` 后它会提示
+   `Authentication required. Please use /login command to sign in`。
+   这是正常的，不是装坏了。
+
+2. **会话只在本地** —— `~/.codebuddy/sessions/` 存着你的对话。
+   换台电脑就没了，**不会自动同步**。所以第 4 章 4.5 节讲的文件记忆很重要。
+
+3. **版本比官网落后一点很正常** —— 本机 2.125.0，npm 上最新 2.141.0。
+   不影响使用，除非你要用某个新功能。
+
+4. **它会占内存** —— 长时间跑大型项目时，它是个吃内存的程序。
+   1G 内存的机器会比较吃力。
+
+> 💡 **判断自己机器够不够**：如果你能用浏览器流畅看视频，
+> 跑 CodeBuddy Code 就没问题。真正的门槛不是机器，是**愿不愿意敲命令**。
+
 ### 1.2 CodeBuddy Code 是什么
 - 对标 Anthropic Claude Code / OpenAI Codex 的自主编程 Agent
 - 不只是代码补全：能自己理解需求、分析代码库、写代码、验证结果

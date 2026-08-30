@@ -46,9 +46,14 @@ status: 草稿
 | 改了代码页面没变 | 缓存 / 没热更新 | 硬刷新（Ctrl+Shift+R） |
 | 本地能跑，别人打不开 | 只跑了本地服务 | 见第 6 章 |
 
-### 5.2.1 三个真实报错长什么样（实测采集）
+### 5.2.1 六个真实报错长什么样（实测采集）
 
-> 下面三段都是**实际跑出来的输出**，不是编的。对照着看，你就知道该盯哪一行。
+> 下面这些**全都是在本机实际跑出来的输出**，不是编的。
+> 采集环境：Node v22.15.0 / npm 10.9.2 / Linux。
+> 对照着看，你就知道该盯哪一行。
+>
+> **你不需要看懂报错在说什么，只需要会复制粘贴。**
+> 看懂是 AI 的工作 —— 但知道"该看哪一行"，能让你不慌。
 
 #### 样本 1：`EADDRINUSE` —— 端口被占用
 
@@ -91,7 +96,72 @@ npm install 那个包名
 但更省事的做法是直接跟 AI 说：
 > 报错说找不到 `xxx` 这个包，帮我装一下，装完重新跑。
 
-#### 样本 3：`npm error code E404` —— 包名写错了
+#### 样本 3：`SyntaxError` —— 代码有笔误（新手最高频）
+
+```
+/tmp/errdemo/syntax.js:2
+  return "未闭合
+         ^^^^
+
+SyntaxError: Invalid or unexpected token
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+```
+
+**该看哪一行**：第一行给了**文件名 + 行号**（`syntax.js:2`），
+下面那个 `^^^^` 指着**具体出错的位置**。
+
+这个例子里，第 2 行是 `return "未闭合` —— 字符串的引号没写完。
+
+**怎么办**：直接把整段贴给 AI 就行，它会立刻定位到那一行。
+你**不需要看懂报错**，只要会复制粘贴。
+
+> 💡 **为什么新手最容易遇到这个**：AI 生成代码时偶尔会漏一个括号或引号，
+> 尤其是改了一段之后。这不是你的错，贴回去让它修就好。
+
+#### 样本 4：`ReferenceError: xxx is not defined` —— 用了不存在的东西
+
+```
+/tmp/errdemo/runtime.js:2
+console.log(getUserName());
+        ^
+
+ReferenceError: getUserName is not defined
+    at Object.<anonymous> (/tmp/errdemo/runtime.js:2:9)
+```
+
+**该看哪一行**：`ReferenceError: getUserName is not defined` ——
+`getUserName` 这个名字**没有定义过**。
+
+**三种常见原因**：
+1. **AI 用了它以为存在、其实没写的函数** —— 最常见，直接贴回去
+2. **拼错了** —— `getUserName` 写成了 `getUsername`（大小写不同算两个名字）
+3. **文件没引进来** —— 这个函数在另一个文件里，但没 import
+
+**怎么办**：
+> 报 `getUserName is not defined`。这个函数你没定义，
+> 是忘了写，还是应该从别的文件引入？
+
+#### 样本 5：`ENOENT: no such file or directory` —— 文件路径不对
+
+```
+Error: ENOENT: no such file or directory, open '/tmp/nope/missing.json'
+    at Object.openSync (node:fs:562:18)
+    at Object.readFileSync (node:fs:446:35)
+```
+
+**该看哪一行**：`ENOENT` + 那个路径。意思是**这个路径下没有这个文件**。
+
+**常见原因**：
+- 文件名或目录名写错了（大小写、多一层少一层）
+- 文件在别的地方（AI 以为在 A 目录，其实在 B 目录）
+- 相对路径的"当前目录"跟你以为的不一样
+
+**怎么办**：先确认文件到底在不在：
+> 报错说找不到 `/tmp/nope/missing.json`。
+> 帮我确认这个文件应该在哪，实际在不在，路径是不是写错了。
+
+#### 样本 6：`npm error code E404` —— 包名写错了
 
 ```
 npm error code E404
@@ -240,5 +310,10 @@ npm error A complete log of this run can be found in: /root/.npm/_logs/2026-08-3
 
 ## 待补材料
 
-- [ ] **真实报错样本库** —— 需要自己实际跑一遍收集（不要编造）
-- [ ] 每个症状的截图
+- [x] **真实报错样本库** —— 已补 6 个实测样本（EADDRINUSE / Cannot find module /
+      SyntaxError / ReferenceError / ENOENT / npm E404），见 5.2.1
+- [ ] 每个症状的截图 —— **需要有人在有图形界面的机器上录屏采集**。
+      纯文本环境无法完成，自愿者可在
+      [GitHub Issues](https://github.com/luckscx/VibeCamp/issues) 认领
+- [ ] 浏览器控制台（F12）报错的样本 —— 需要真实浏览器环境采集
+- [ ] Windows 特有的报错（PowerShell 权限、路径分隔符等）

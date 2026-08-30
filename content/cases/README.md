@@ -26,6 +26,7 @@ order: 90
 | [速通计时：刷新一下就"作弊"了](./速通计时刷新作弊/README.md) | sell_games · 3 commits | 「能跑」≠「对」；改 bug 往往要三轮 |
 | [别用 alert 弹窗，做个会消失的提示](./别用alert弹窗/README.md) | AutoCard · 1 commit | "不要什么"和"要什么"同样重要 |
 | [锁着的东西就别显示出来](./锁着的东西别显示/README.md) | sell_games · 2 commits | 渐进披露；改完一处要想到另一处 |
+| [云存档改了 8 次](./云存档改了八次/README.md) | sell_games · 8 commits | 好提示要给用户出路；"改了很多次"是正常的 |
 
 ## 按主题索引
 
