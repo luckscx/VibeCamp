@@ -1,7 +1,7 @@
 ---
 title: 装环境
 order: 2
-status: 大纲
+status: 草稿
 ---
 
 # 第 2 章 · 装环境：从零到"AI 能干活"
